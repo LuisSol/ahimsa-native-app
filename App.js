@@ -3,13 +3,16 @@ import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Animated, Button, StyleSheet, Text, View } from 'react-native';
+import SplashImage from './src/assets/images/LOGO_APP.png'
+import * as Font from 'expo-font';
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHide();
 
 export default function App() {
+ 
   return (
-    <AnimatedAppLoader image={{ uri: Constants.manifest.splash.image }}>
+    <AnimatedAppLoader image={SplashImage}>
       <MainScreen />
     </AnimatedAppLoader>
   );
@@ -20,7 +23,7 @@ function AnimatedAppLoader({ children, image }) {
 
   const startAsync = React.useMemo(
     // If you use a local image with require(...), use `Asset.fromModule`
-    () => () => Asset.fromURI(image).downloadAsync(),
+    () => () => Asset.fromModule(image).downloadAsync(),
     [image]
   );
 
@@ -54,7 +57,7 @@ function AnimatedSplashScreen({ children, image }) {
     if (isAppReady) {
       Animated.timing(animation, {
         toValue: 0,
-        duration: 200,
+        duration: 300,
         useNativeDriver: true,
       }).start(() => setAnimationComplete(true));
     }
@@ -63,8 +66,14 @@ function AnimatedSplashScreen({ children, image }) {
   const onImageLoaded = React.useMemo(() => async () => {
     SplashScreen.hide();
     try {
-      // Load stuff
-      await Promise.all([]);
+      // Load stuff      
+      await Promise.all([
+        // Load fonts
+        Font.loadAsync({
+          'Sacramento-Regular': require('./src/assets/fonts/Sacramento-Regular.ttf')
+        })
+  
+      ]);
     } catch (e) {
       // handle errors
     } finally {
@@ -85,10 +94,11 @@ function AnimatedSplashScreen({ children, image }) {
               opacity: animation,
             },
           ]}>
+                    
           <Animated.Image
             style={{
-              width: '100%',
-              height: '100%',
+              width: "100%",
+              height: "100%",
               resizeMode: Constants.manifest.splash.resizeMode || 'contain',
               transform: [
                 {
@@ -107,24 +117,39 @@ function AnimatedSplashScreen({ children, image }) {
 }
 
 function MainScreen() {
+    
+
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: 'plum',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
+        padding: 40
       }}>
       <Text
-        style={{
-          color: 'black',
-          fontSize: 30,
-          marginBottom: 15,
-          fontWeight: 'bold',
-        }}>
-        Pretty Cool!
+        style={styles.mainTitle}
+      >
+        Ahimsa
       </Text>
-      <Button title="Run Again" onPress={() => Updates.reload()} />
+      <Text
+        style={styles.regularText}
+      >
+        Selecciona tu ritmo:
+      </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  mainTitle: {
+    fontFamily: 'Sacramento-Regular', 
+    fontSize: 60
+  },
+  regularText: {
+    fontSize: 15
+  }
+})
+
+
+
