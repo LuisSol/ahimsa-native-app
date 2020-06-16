@@ -1,20 +1,61 @@
 import { AppLoading, SplashScreen, Updates } from 'expo';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import React from 'react';
-import { Animated, Button, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import SplashImage from './src/assets/images/LOGO_APP.png'
 import * as Font from 'expo-font';
+import RoutineCarousel from './src/components/RoutineCarousel'
+import { LinearGradient } from 'expo-linear-gradient'
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHide();
+// To change the start button gradient between routines
+const startButtonColors = [
+  ['#F0CB35', '#C02425'],
+  ['#159957', '#155799'],
+  ['#C33764', '#1D2671']
+];
 
-export default function App() {
- 
+export default function App() { 
   return (
     <AnimatedAppLoader image={SplashImage}>
       <MainScreen />
     </AnimatedAppLoader>
+  );
+}
+ 
+const MainScreen = () => {   
+  const [buttonColor, setButtonColor] = useState(startButtonColors[0]);
+  const [currentRoutine, setCurrentRoutine] = useState(0);
+
+  const changeRoutine = (routine) => {
+    setCurrentRoutine(routine);
+    setButtonColor(startButtonColors[routine])
+  }
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: 40
+      }}>
+      <Text style={styles.mainTitle}>Ahimsa</Text>      
+      <Text style={styles.regularText}>
+        Selecciona tu ritmo:
+      </Text>
+      <RoutineCarousel 
+        changeRoutine={changeRoutine}
+      />
+      <LinearGradient
+        colors={buttonColor}
+        style={styles.startButton}
+      >
+        <Text style={styles.buttonText}>Iniciar</Text>
+      </LinearGradient>
+    </View>
   );
 }
 
@@ -45,7 +86,6 @@ function AnimatedAppLoader({ children, image }) {
     </AnimatedSplashScreen>
   );
 }
-
 function AnimatedSplashScreen({ children, image }) {
   const animation = React.useMemo(() => new Animated.Value(1), []);
   const [isAppReady, setAppReady] = React.useState(false);
@@ -116,31 +156,6 @@ function AnimatedSplashScreen({ children, image }) {
   );
 }
 
-function MainScreen() {
-    
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 40
-      }}>
-      <Text
-        style={styles.mainTitle}
-      >
-        Ahimsa
-      </Text>
-      <Text
-        style={styles.regularText}
-      >
-        Selecciona tu ritmo:
-      </Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   mainTitle: {
     fontFamily: 'Sacramento-Regular', 
@@ -148,6 +163,20 @@ const styles = StyleSheet.create({
   },
   regularText: {
     fontSize: 15
+  },
+  startButton: {
+    position: 'absolute',
+    bottom: 50,
+    width: '60%',
+    height: '8%',
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',  
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 21
   }
 })
 
