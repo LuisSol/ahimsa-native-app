@@ -26,31 +26,26 @@ export default function App() {
 }
  
 const MainScreen = () => {   
-  const [buttonColor, setButtonColor] = useState(startButtonColors[0]);
   const [currentRoutine, setCurrentRoutine] = useState(0);
 
-  const changeRoutine = (routine) => {
+  const changeRoutine = (routine) => {    
     setCurrentRoutine(routine);
-    setButtonColor(startButtonColors[routine])
   }
 
   return (
     <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 40
-      }}>
+      style={styles.mainContainer}>
       <Text style={styles.mainTitle}>Ahimsa</Text>      
       <Text style={styles.regularText}>
         Selecciona tu ritmo:
       </Text>
-      <RoutineCarousel 
+      <RoutineCarousel
+        colors={startButtonColors} 
         changeRoutine={changeRoutine}
+        currentRutine={currentRoutine}
       />
       <LinearGradient
-        colors={buttonColor}
+        colors={startButtonColors[currentRoutine]}
         style={styles.startButton}
       >
         <Text style={styles.buttonText}>Iniciar</Text>
@@ -157,6 +152,13 @@ function AnimatedSplashScreen({ children, image }) {
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 40,
+    paddingBottom: 70
+  },
   mainTitle: {
     fontFamily: 'Sacramento-Regular', 
     fontSize: 60
@@ -165,8 +167,6 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   startButton: {
-    position: 'absolute',
-    bottom: 50,
     width: '60%',
     height: '8%',
     borderRadius: 10,
