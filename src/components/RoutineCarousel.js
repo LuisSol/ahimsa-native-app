@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import Routine from './Routine'
+import styles from '../styles'
 
 const routines = [
     {
@@ -96,7 +97,7 @@ const RoutineCarousel = (props) => {
     }
 
     return (
-        <View style={styles.mainContainer}>
+        <View style={styles.routineContainer}>
             <ScrollView
                 horizontal
                 pagingEnabled
@@ -122,30 +123,5 @@ const RoutineCarousel = (props) => {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    mainContainer: {
-        height: '80%',
-        width: '100%',
-        paddingTop: 20,
-        justifyContent: 'center'      
-    },
-    circlesContainer: {
-        width: '100%',
-        height: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-        bottom: 30
-    },
-    navCircle: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: '#666',
-        margin: 5  
-    }
-})
 
 export default RoutineCarousel;

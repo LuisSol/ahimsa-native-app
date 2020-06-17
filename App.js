@@ -1,56 +1,38 @@
 import { AppLoading, SplashScreen, Updates } from 'expo';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import React, { useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import SplashImage from './src/assets/images/LOGO_APP.png'
 import * as Font from 'expo-font';
-import RoutineCarousel from './src/components/RoutineCarousel'
-import { LinearGradient } from 'expo-linear-gradient'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import MainScreen from './src/components/MainScreen'
+import StartScreen from './src/components/StartScreen'
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHide();
-// To change the start button gradient between routines
-const startButtonColors = [
-  ['#F0CB35', '#C02425'],
-  ['#159957', '#155799'],
-  ['#C33764', '#1D2671']
-];
+
+const MainStack = createStackNavigator();
 
 export default function App() { 
   return (
     <AnimatedAppLoader image={SplashImage}>
-      <MainScreen />
+      <NavigationContainer>
+        <MainStack.Navigator>
+          <MainStack.Screen 
+            name="Home" 
+            component={MainScreen} 
+            options={ { headerShown: false } }
+          />
+          <MainStack.Screen 
+            name="Start" 
+            component={StartScreen} 
+            options={ { headerShown: false } }
+          />
+        </MainStack.Navigator>
+      </NavigationContainer>
     </AnimatedAppLoader>
-  );
-}
- 
-const MainScreen = () => {   
-  const [currentRoutine, setCurrentRoutine] = useState(0);
-
-  const changeRoutine = (routine) => {    
-    setCurrentRoutine(routine);
-  }
-
-  return (
-    <View
-      style={styles.mainContainer}>
-      <Text style={styles.mainTitle}>Ahimsa</Text>      
-      <Text style={styles.regularText}>
-        Selecciona tu ritmo:
-      </Text>
-      <RoutineCarousel
-        colors={startButtonColors} 
-        changeRoutine={changeRoutine}
-        currentRutine={currentRoutine}
-      />
-      <LinearGradient
-        colors={startButtonColors[currentRoutine]}
-        style={styles.startButton}
-      >
-        <Text style={styles.buttonText}>Iniciar</Text>
-      </LinearGradient>
-    </View>
   );
 }
 
@@ -150,35 +132,3 @@ function AnimatedSplashScreen({ children, image }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 40,
-    paddingBottom: 70
-  },
-  mainTitle: {
-    fontFamily: 'Sacramento-Regular', 
-    fontSize: 60
-  },
-  regularText: {
-    fontSize: 15
-  },
-  startButton: {
-    width: '60%',
-    height: '8%',
-    borderRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',  
-  },
-  buttonText: {
-    color: '#FFF',
-    fontSize: 21
-  }
-})
-
-
-
