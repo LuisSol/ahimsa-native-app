@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native'
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const TOTAL_CENTER = {
+export const DEVICE_WIDTH = Dimensions.get('window').width;
+export const TOTAL_CENTER = {
     justifyContent: 'center',
     alignItems: 'center', 
 }
@@ -75,6 +75,27 @@ export default StyleSheet.create({
       height: '100%',
       width: '100%',
       ...TOTAL_CENTER
+    },
+    breathCircle: {
+      borderRadius: 120, 
+      height: 240, 
+      width: 240, 
+      position: 'absolute', 
+      backgroundColor: 'red',
+      ...TOTAL_CENTER
+    },
+    rotationPivot: {
+      position: 'absolute', 
+      width: 20, 
+      height: 350
+    },
+    pointer: {
+      width: 20, 
+      height: 20, 
+      borderRadius: 10, 
+      backgroundColor: 'white', 
+      borderWidth: 1, 
+      borderColor: '#666'
     }
   })
 

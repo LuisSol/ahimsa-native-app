@@ -5,9 +5,7 @@ import { SvgCss } from 'react-native-svg'
 import styles from '../styles'
 
 const Routine = (props) => {
-
-    console.log(props);
-
+    
     return (
         <View style={styles.routineCard}>            
             <LinearGradient
