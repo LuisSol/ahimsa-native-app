@@ -3,12 +3,15 @@ import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import SplashImage from './src/assets/images/LOGO_APP.png'
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import { Provider } from 'react-redux'
+
 import MainScreen from './src/components/MainScreen'
 import StartScreen from './src/components/StartScreen'
+import SplashImage from './src/assets/images/LOGO_APP.png'
+import store from './src/redux/storeConfig'
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHide();
@@ -17,6 +20,7 @@ const MainStack = createStackNavigator();
 
 export default function App() { 
   return (
+  <Provider store={store}>
     <AnimatedAppLoader image={SplashImage}>
       <NavigationContainer>
         <MainStack.Navigator>
@@ -33,6 +37,7 @@ export default function App() {
         </MainStack.Navigator>
       </NavigationContainer>
     </AnimatedAppLoader>
+  </Provider>
   );
 }
 

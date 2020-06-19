@@ -3,9 +3,13 @@ import { Text, View, Modal, TouchableOpacity, Animated, Easing } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { VictoryPie } from 'victory-native' 
+import { useSelector } from 'react-redux'
+
 import styles, { TOTAL_CENTER, btnGradientColors, pieChartColors } from '../styles'
 
 // Animations values
+const msgTransitionTime = 200;
+const introModalDuration = 4500;
 const spinValue = new Animated.Value(0);
 const growValue = new Animated.Value(0);
 const msg1Opacity = new Animated.Value(1);
@@ -21,20 +25,29 @@ const grow = growValue.interpolate({
 });
 
 const StartScreen = () => {
+    const { routine, routineIndex } = useSelector( state => state);
     const navigation = useNavigation();
     const [quoteVisible, setQuoteVisible] = useState(true);
     const [countdownVisible, setCountDownVisible] = useState(false);
-    const [counter, setCounter] = useState(3);
-    const [playingRoutine, setPlayingRoutine] = useState(true);
+    const [playingRoutine, setPlayingRoutine] = useState(false);
+    const [counter, setCounter] = useState(3);    
 
     const returnToMain = () => {
         navigation.navigate('Home')
-    };
-    
+    };    
+
+    // Intro modal
+    useFocusEffect(() => {        
+        setTimeout(() => {           
+            setQuoteVisible(false);            
+        },introModalDuration);
+    },[]);
+
     const restartRutine = () => {
         setPlayingRoutine(true);
         resetAnimations();
         setCountDownVisible(true);
+        // Start Countdown
         setTimeout(() => {
             setCounter(counter - 1);
         }, 1300);
@@ -43,21 +56,129 @@ const StartScreen = () => {
     const startRoutine = () => {
         setTimeout(() => {
             startAnimations();
-        }, 200);        
+        }, msgTransitionTime);        
     }
 
-    // Time for the intro modal
-    useFocusEffect(() => {        
-        setTimeout(() => {           
-            setQuoteVisible(false);            
-        },3500);
-    },[]);
-    useEffect(() => {
-        if(!quoteVisible) {
-            restartRutine();
-        }    
-    }, [quoteVisible]);
+    const resetAnimations = () => {
+        spinValue.setValue(0) 
+        growValue.setValue(0) 
+        msg1Opacity.setValue(1)  
+        msg2Opacity.setValue(0)  
+        msg3Opacity.setValue(0)  
+    }
 
+    const startAnimations = () => {
+        /* 
+            I used another animation for the instruction message change instead of state
+            because state update is asyncronus and i need the message change to be syncronus.
+            I used two parallel Animation loops for the same reason
+        */
+        // calculate required values from state
+        const TOTAL_DURATION = routine.inhaleTime + 
+                               routine.holdTime +
+                               routine.exhaleTime;
+        const INHALE_MSG_DURATION = routine.inhaleTime - msgTransitionTime;
+        const HOLD_MSG_DURATION = routine.holdTime - msgTransitionTime;
+        const EXHALE_MSG_DURATION = routine.exhaleTime - msgTransitionTime - 100;
+        const EXHALE_CIRCLE_DURATION = routine.exhaleTime - 100;
+
+        Animated.parallel([
+            Animated.loop(
+                // Pointer Animation                
+                Animated.timing(spinValue, {
+                    toValue: 1,
+                    duration: TOTAL_DURATION,
+                    useNativeDriver: true,
+                    easing: Easing.linear
+                })                                  
+                ,
+                {
+                    iterations: routine.iterations
+                }
+            ) 
+            ,
+            Animated.loop(
+                Animated.parallel([                
+                    // Respiration Animation                           
+                    Animated.sequence([
+                        Animated.timing(growValue, {
+                            toValue: 1,
+                            duration: routine.inhaleTime,
+                            useNativeDriver: true,
+                            easing: Easing.linear
+                        }),
+                        Animated.timing(growValue, {
+                            toValue: 0,
+                            delay: routine.holdTime,
+                            duration: EXHALE_CIRCLE_DURATION,
+                            useNativeDriver: true,
+                            easing: Easing.linear
+                        })
+                    ])
+                    ,    
+                    // Instructions Animation          
+                    Animated.sequence([
+                        Animated.parallel([
+                            Animated.timing(msg1Opacity, {
+                                toValue: 0,
+                                delay: INHALE_MSG_DURATION, 
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg2Opacity, {
+                                toValue: 1,
+                                delay: INHALE_MSG_DURATION,
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ]),
+                        Animated.parallel([
+                            Animated.timing(msg2Opacity, {
+                                toValue: 0,
+                                delay: HOLD_MSG_DURATION, 
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg3Opacity, {
+                                toValue: 1,
+                                delay: HOLD_MSG_DURATION,
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ]),
+                        Animated.parallel([
+                            Animated.timing(msg3Opacity, {
+                                toValue: 0,
+                                delay: EXHALE_MSG_DURATION, 
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg1Opacity, {
+                                toValue: 1,
+                                delay: EXHALE_MSG_DURATION,
+                                duration: msgTransitionTime,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ])                        
+                    ])
+                ])           
+                ,
+                {
+                    iterations: routine.iterations 
+                }
+            // I needed to use this hack in order to execute a callback function at the end of the Animations
+            // for some reason the Animated.parallel doesnt execute the callback at the end
+            ).start(() => setPlayingRoutine(false) )
+        ]).start();
+    }
+
+    // Countdown to start the routine
     useEffect(() => { 
         if (counter === 'Ya') {
             setTimeout( () => {
@@ -76,117 +197,7 @@ const StartScreen = () => {
                 }                                
             },1000);                      
         }        
-    }, [counter]);
-
-    const resetAnimations = () => {
-        spinValue.setValue(0) 
-        growValue.setValue(0) 
-        msg1Opacity.setValue(1)  
-        msg2Opacity.setValue(0)  
-        msg3Opacity.setValue(0)  
-    }
-
-    const startAnimations = () => {
-        /* 
-            I used another animation for the instruction message change instead of state
-            because state update is asyncronus and i need the message change to be syncronus.
-            I used two parallel Animation loops for the same reason
-        */
-        Animated.parallel([
-            Animated.loop(
-                // Pointer Animation                
-                Animated.timing(spinValue, {
-                    toValue: 1,
-                    duration: 2500,
-                    useNativeDriver: true,
-                    easing: Easing.linear
-                })                                  
-                ,
-                {
-                    iterations: 12 
-                }
-            ) 
-            ,
-            Animated.loop(
-                Animated.parallel([                
-                    // Respiration Animation                           
-                    Animated.sequence([
-                        Animated.timing(growValue, {
-                            toValue: 1,
-                            duration: 1000,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        }),
-                        Animated.timing(growValue, {
-                            toValue: 0,
-                            delay: 500,
-                            duration: 900,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        })
-                    ])
-                    ,    
-                    // Instructions Animation          
-                    Animated.sequence([
-                        Animated.parallel([
-                            Animated.timing(msg1Opacity, {
-                                toValue: 0,
-                                delay: 800, 
-                                duration: 200,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            }),
-                            Animated.timing(msg2Opacity, {
-                                toValue: 1,
-                                delay: 800,
-                                duration: 200,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            })
-                        ]),
-                        Animated.parallel([
-                            Animated.timing(msg2Opacity, {
-                                toValue: 0,
-                                delay: 250, 
-                                duration: 250,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            }),
-                            Animated.timing(msg3Opacity, {
-                                toValue: 1,
-                                delay: 250,
-                                duration: 250,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            })
-                        ]),
-                        Animated.parallel([
-                            Animated.timing(msg3Opacity, {
-                                toValue: 0,
-                                delay: 700, 
-                                duration: 200,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            }),
-                            Animated.timing(msg1Opacity, {
-                                toValue: 1,
-                                delay: 700,
-                                duration: 200,
-                                useNativeDriver: true,
-                                easing: Easing.linear
-                            })
-                        ])                        
-                    ])
-                ])           
-                ,
-                {
-                    iterations: 12 
-                }
-            // I needed to use this hack in order to execute a callback function at the end of the Animations
-            // for some reason the Animated.parallel doesnt execute the callback at the end
-            ).start(() => setPlayingRoutine(false) )
-        ]).start();
-    }
+    }, [counter]);    
 
     return (
         <>
@@ -216,12 +227,8 @@ const StartScreen = () => {
                 <Text style={styles.mainTitle}>Energía</Text> 
                 <View style={{...TOTAL_CENTER}}>
                     <VictoryPie
-                        data={[
-                            { y: 2 },
-                            { y: 1 },
-                            { y: 2 }
-                        ]}
-                        colorScale={pieChartColors[0]}
+                        data={routine.pieChart}
+                        colorScale={pieChartColors[routineIndex]}
                         labels={[]}
                         radius={150}
                         innerRadius={90}
@@ -230,7 +237,7 @@ const StartScreen = () => {
                         style={[styles.breathCircle, {transform: [{scale: grow}]}]}
                     >   
                         <LinearGradient
-                            colors={btnGradientColors.startButton[0]} 
+                            colors={btnGradientColors.startButton[routineIndex]} 
                             style={styles.breathCircle}           
                         >
                             <Animated.Text
@@ -262,7 +269,7 @@ const StartScreen = () => {
                     onPress={restartRutine}                
                 >
                     <LinearGradient
-                        colors={btnGradientColors.startButton[0]} 
+                        colors={btnGradientColors.startButton[routineIndex]} 
                         style={styles.primaryButton}           
                     >
                         <Text style={styles.buttonText}>Iniciar</Text>

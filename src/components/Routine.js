@@ -2,6 +2,7 @@ import React from 'react'
 import { View , Text} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { SvgCss } from 'react-native-svg'
+
 import styles from '../styles'
 
 const Routine = (props) => {

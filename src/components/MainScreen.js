@@ -3,16 +3,14 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import RoutineCarousel from './RoutineCarousel'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
+
 import styles, { btnGradientColors } from '../styles'
+import { useSelector } from 'react-redux'
 
 export default MainScreen = () => {   
-    const [currentRoutine, setCurrentRoutine] = useState(0);
     const navigation = useNavigation();
-  
-    const changeRoutine = (routine) => {    
-      setCurrentRoutine(routine);
-    }
-    
+    const current = useSelector(state => state.routineIndex);
+
     const startRoutine = () => {
         navigation.navigate('Start');
     }
@@ -24,19 +22,16 @@ export default MainScreen = () => {
         <Text style={styles.regularText}>
           Selecciona tu ritmo:
         </Text>
-        <RoutineCarousel
-          changeRoutine={changeRoutine}
-          currentRutine={currentRoutine}
-        />
+        <RoutineCarousel />
         <TouchableOpacity 
             style={styles.touchablePrimaryBtn}
             onPress={startRoutine}
         >
             <LinearGradient
-                colors={btnGradientColors.startButton[currentRoutine]} 
+                colors={btnGradientColors.startButton[current]} 
                 style={styles.primaryButton}           
             >
-            <Text style={styles.buttonText}>Iniciar</Text>
+            <Text style={styles.buttonText}>Elegir</Text>
             </LinearGradient>
         </TouchableOpacity>
       </View>
