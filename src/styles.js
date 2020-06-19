@@ -132,6 +132,9 @@ export default StyleSheet.create({
     countDownNum: {
       fontSize: 100,
       fontFamily: 'Sacramento-Regular'
+    },
+    disabledBtn: {
+      opacity: .2
     }
   })
 

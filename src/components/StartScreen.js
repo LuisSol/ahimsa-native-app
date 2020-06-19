@@ -87,103 +87,104 @@ const StartScreen = () => {
     }
 
     const startAnimations = () => {
-        /* I couln't use state to change the instruction message 
-           due Animated.sequene currently doesnt allow a callback per step,
-           also state changes are asyncronus :)  
+        /* 
+            I used another animation for the instruction message change instead of state
+            because state update is asyncronus and i need the message change to be syncronus.
+            I used two parallel Animation loops for the same reason
         */
         Animated.parallel([
-            // Pointer rotation animation
-            Animated.loop(                
+            Animated.loop(
+                // Pointer Animation                
                 Animated.timing(spinValue, {
                     toValue: 1,
                     duration: 2500,
                     useNativeDriver: true,
                     easing: Easing.linear
-                })
-                ,                
-                {
-                    iterations: 12
-                }
-            ), 
-            // Respiration Animation
-            Animated.loop(                
-                Animated.sequence([
-                    Animated.timing(growValue, {
-                        toValue: 1,
-                        duration: 1000,
-                        useNativeDriver: true,
-                        easing: Easing.linear
-                    }),
-                    Animated.timing(growValue, {
-                        toValue: 0,
-                        delay: 450,
-                        duration: 1000,
-                        useNativeDriver: true,
-                        easing: Easing.linear
-                    })
-                ])
-                ,
-                {
-                    iterations: 12
-                }
-            ),
-            // Instruction Animation
-            Animated.loop(                
-                Animated.sequence([
-                    Animated.parallel([
-                        Animated.timing(msg1Opacity, {
-                            toValue: 0,
-                            delay: 800, 
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        }),
-                        Animated.timing(msg2Opacity, {
-                            toValue: 1,
-                            delay: 800,
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        })
-                    ]),
-                    Animated.parallel([
-                        Animated.timing(msg2Opacity, {
-                            toValue: 0,
-                            delay: 200, 
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        }),
-                        Animated.timing(msg3Opacity, {
-                            toValue: 1,
-                            delay: 200,
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        })
-                    ]),
-                    Animated.parallel([
-                        Animated.timing(msg3Opacity, {
-                            toValue: 0,
-                            delay: 800, 
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        }),
-                        Animated.timing(msg1Opacity, {
-                            toValue: 1,
-                            delay: 800,
-                            duration: 200,
-                            useNativeDriver: true,
-                            easing: Easing.linear
-                        })
-                    ])                        
-                ])
+                })                                  
                 ,
                 {
                     iterations: 12 
                 }
-            )
+            ) 
+            ,
+            Animated.loop(
+                Animated.parallel([                
+                    // Respiration Animation                           
+                    Animated.sequence([
+                        Animated.timing(growValue, {
+                            toValue: 1,
+                            duration: 1000,
+                            useNativeDriver: true,
+                            easing: Easing.linear
+                        }),
+                        Animated.timing(growValue, {
+                            toValue: 0,
+                            delay: 500,
+                            duration: 900,
+                            useNativeDriver: true,
+                            easing: Easing.linear
+                        })
+                    ])
+                    ,    
+                    // Instructions Animation          
+                    Animated.sequence([
+                        Animated.parallel([
+                            Animated.timing(msg1Opacity, {
+                                toValue: 0,
+                                delay: 800, 
+                                duration: 200,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg2Opacity, {
+                                toValue: 1,
+                                delay: 800,
+                                duration: 200,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ]),
+                        Animated.parallel([
+                            Animated.timing(msg2Opacity, {
+                                toValue: 0,
+                                delay: 250, 
+                                duration: 250,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg3Opacity, {
+                                toValue: 1,
+                                delay: 250,
+                                duration: 250,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ]),
+                        Animated.parallel([
+                            Animated.timing(msg3Opacity, {
+                                toValue: 0,
+                                delay: 700, 
+                                duration: 200,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            }),
+                            Animated.timing(msg1Opacity, {
+                                toValue: 1,
+                                delay: 700,
+                                duration: 200,
+                                useNativeDriver: true,
+                                easing: Easing.linear
+                            })
+                        ])                        
+                    ])
+                ])           
+                ,
+                {
+                    iterations: 12 
+                }
+            // I needed to use this hack in order to execute a callback function at the end of the Animations
+            // for some reason the Animated.parallel doesnt execute the callback at the end
+            ).start(() => setPlayingRoutine(false) )
         ]).start();
     }
 
@@ -257,7 +258,7 @@ const StartScreen = () => {
                 </View>
                 <TouchableOpacity
                     disabled={playingRoutine} 
-                    style={styles.touchablePrimaryBtn}
+                    style={[styles.touchablePrimaryBtn, (playingRoutine) ? styles.disabledBtn : {} ]}
                     onPress={restartRutine}                
                 >
                     <LinearGradient
