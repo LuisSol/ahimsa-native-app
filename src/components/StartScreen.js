@@ -50,7 +50,7 @@ const StartScreen = () => {
         // Start Countdown
         setTimeout(() => {
             setCounter(counter - 1);
-        }, 1300);
+        }, 1000);
     };
 
     const startRoutine = () => {
@@ -224,7 +224,7 @@ const StartScreen = () => {
             </Modal>
 
             <View style={styles.mainContainer}>
-                <Text style={styles.mainTitle}>Energía</Text> 
+                <Text style={styles.mainTitle}>{routine.title}</Text> 
                 <View style={{...TOTAL_CENTER}}>
                     <VictoryPie
                         data={routine.pieChart}

@@ -14,7 +14,9 @@ export const btnGradientColors = {
   backBtnColor: ['#ED213A', '#93291E']
 }
 export const pieChartColors = [
- ['rgba(255,50,0,.5)','rgba(255,0,0,.5)','rgba(255,0,0,.8)' ],
+  ['rgba(255,0,0,.5)','rgba(255,50,0,.5)','rgba(255,0,0,.8)' ],
+  ['rgba(0,100,100,.7)','rgba(0,150,150,.7)','rgba(0,50,50,.7)' ],
+  ['rgba(66,0,80,.7)','rgba(60,16,83,.5)','rgba(60,16,83,.8)' ],
 ]
 export default StyleSheet.create({
     mainContainer: {
@@ -91,8 +93,7 @@ export default StyleSheet.create({
       borderRadius: 115, 
       height: 230, 
       width: 230, 
-      position: 'absolute', 
-      backgroundColor: 'red',
+      position: 'absolute',
       ...TOTAL_CENTER
     },
     rotationPivot: {
