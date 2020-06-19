@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native'
 import Routine from './Routine'
-import styles from '../styles'
+import styles, { btnGradientColors } from '../styles'
 
 const routines = [
     {
@@ -108,7 +108,7 @@ const RoutineCarousel = (props) => {
                     (<Routine 
                         key={routine.id} 
                         {...routine}
-                        color={props.colors[index]}
+                        color={btnGradientColors.startButton[index]}
                      />))}
             </ScrollView>
             <View style={styles.circlesContainer}>

@@ -89,7 +89,7 @@ function AnimatedSplashScreen({ children, image }) {
         Font.loadAsync({
           'Sacramento-Regular': require('./src/assets/fonts/Sacramento-Regular.ttf')
         })
-  
+
       ]);
     } catch (e) {
       // handle errors

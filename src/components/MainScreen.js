@@ -3,14 +3,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import RoutineCarousel from './RoutineCarousel'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
-import styles from '../styles'
-
-// To change the start button gradient between routines
-const startButtonColors = [
-    ['#F0CB35', '#C02425'],
-    ['#159957', '#155799'],
-    ['#C33764', '#1D2671']
-  ];
+import styles, { btnGradientColors } from '../styles'
 
 export default MainScreen = () => {   
     const [currentRoutine, setCurrentRoutine] = useState(0);
@@ -32,7 +25,6 @@ export default MainScreen = () => {
           Selecciona tu ritmo:
         </Text>
         <RoutineCarousel
-          colors={startButtonColors} 
           changeRoutine={changeRoutine}
           currentRutine={currentRoutine}
         />
@@ -41,7 +33,7 @@ export default MainScreen = () => {
             onPress={startRoutine}
         >
             <LinearGradient
-                colors={startButtonColors[currentRoutine]} 
+                colors={btnGradientColors.startButton[currentRoutine]} 
                 style={styles.primaryButton}           
             >
             <Text style={styles.buttonText}>Iniciar</Text>

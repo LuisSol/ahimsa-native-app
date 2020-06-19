@@ -3,11 +3,7 @@ import { Text, View, Modal, TouchableOpacity, Animated, Easing } from 'react-nat
 import { LinearGradient } from 'expo-linear-gradient'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { VictoryPie } from 'victory-native' 
-import styles, { TOTAL_CENTER } from '../styles'
-
-const backBtnColor = [
-    ['#ED213A', '#93291E']
-]
+import styles, { TOTAL_CENTER, btnGradientColors, pieChartColors } from '../styles'
 
 // Animations values
 const spinValue = new Animated.Value(0);
@@ -21,30 +17,66 @@ const spin = spinValue.interpolate({
 });
 const grow = growValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [1, 1.1]
+    outputRange: [1, 1.15]
 });
 
 const StartScreen = () => {
     const navigation = useNavigation();
     const [quoteVisible, setQuoteVisible] = useState(true);
+    const [countdownVisible, setCountDownVisible] = useState(false);
+    const [counter, setCounter] = useState(3);
+    const [playingRoutine, setPlayingRoutine] = useState(true);
 
     const returnToMain = () => {
         navigation.navigate('Home')
-    }
+    };
     
-    // Time for the intro modal
-    useFocusEffect(() => {
+    const restartRutine = () => {
+        setPlayingRoutine(true);
+        resetAnimations();
+        setCountDownVisible(true);
         setTimeout(() => {
-            setQuoteVisible(false);
-        },3500);
-    },[])
+            setCounter(counter - 1);
+        }, 1300);
+    };
 
+    const startRoutine = () => {
+        setTimeout(() => {
+            startAnimations();
+        }, 200);        
+    }
+
+    // Time for the intro modal
+    useFocusEffect(() => {        
+        setTimeout(() => {           
+            setQuoteVisible(false);            
+        },3500);
+    },[]);
     useEffect(() => {
         if(!quoteVisible) {
-            resetAnimations();  
-            startAnimations();                       
+            restartRutine();
         }    
     }, [quoteVisible]);
+
+    useEffect(() => { 
+        if (counter === 'Ya') {
+            setTimeout( () => {
+                setCountDownVisible(false);
+                setCounter(3);
+                startRoutine();
+            }, 700);           
+        }       
+        else if (countdownVisible) {
+            setTimeout(() => {
+                if (counter !== 1) {
+                    setCounter(counter - 1)
+                } 
+                else {                    
+                    setCounter('Ya');
+                }                                
+            },1000);                      
+        }        
+    }, [counter]);
 
     const resetAnimations = () => {
         spinValue.setValue(0) 
@@ -70,7 +102,7 @@ const StartScreen = () => {
                 })
                 ,                
                 {
-                    iterations: 7
+                    iterations: 12
                 }
             ), 
             // Respiration Animation
@@ -92,7 +124,7 @@ const StartScreen = () => {
                 ])
                 ,
                 {
-                    iterations: 7
+                    iterations: 12
                 }
             ),
             // Instruction Animation
@@ -149,7 +181,7 @@ const StartScreen = () => {
                 ])
                 ,
                 {
-                    iterations: 7 
+                    iterations: 12 
                 }
             )
         ]).start();
@@ -167,6 +199,18 @@ const StartScreen = () => {
                 </View>
             </Modal>
 
+            <Modal
+                visible={countdownVisible}
+                animationType='fade'
+                transparent={true}
+            >
+                <View style={styles.countDownModal}>
+                    <View style={styles.countDownContainer}>
+                        <Text style={styles.countDownNum}>{counter}</Text>
+                    </View>
+                </View>
+            </Modal>
+
             <View style={styles.mainContainer}>
                 <Text style={styles.mainTitle}>Energía</Text> 
                 <View style={{...TOTAL_CENTER}}>
@@ -176,29 +220,34 @@ const StartScreen = () => {
                             { y: 1 },
                             { y: 2 }
                         ]}
-                        colorScale={['tomato','yellow','green']}
+                        colorScale={pieChartColors[0]}
                         labels={[]}
                         radius={150}
                         innerRadius={90}
                     />
                     <Animated.View 
                         style={[styles.breathCircle, {transform: [{scale: grow}]}]}
-                    >
-                        <Animated.Text
-                            style={{opacity: msg1Opacity, position: 'absolute' }} 
+                    >   
+                        <LinearGradient
+                            colors={btnGradientColors.startButton[0]} 
+                            style={styles.breathCircle}           
                         >
-                            Inhala
-                        </Animated.Text>
-                        <Animated.Text 
-                            style={{opacity: msg2Opacity, position: 'absolute'  }}
-                        >
-                            Sostén
-                        </Animated.Text>
-                        <Animated.Text 
-                            style={{opacity: msg3Opacity, position: 'absolute' }}
-                        >
-                            Exhala
-                        </Animated.Text>
+                            <Animated.Text
+                                style={[styles.instruction, {opacity: msg1Opacity}]} 
+                            >
+                                Inhala
+                            </Animated.Text>
+                            <Animated.Text 
+                                style={[styles.instruction, {opacity: msg2Opacity}]}
+                            >
+                                Sostén
+                            </Animated.Text>
+                            <Animated.Text 
+                                style={[styles.instruction, {opacity: msg3Opacity}]}
+                            >
+                                Exhala
+                            </Animated.Text>
+                        </LinearGradient>
                     </Animated.View>
                     <Animated.View 
                         style={[styles.rotationPivot, {transform: [{ rotate: spin}]}]}
@@ -206,17 +255,30 @@ const StartScreen = () => {
                         <View style={styles.pointer}></View>
                     </Animated.View>
                 </View>
+                <TouchableOpacity
+                    disabled={playingRoutine} 
+                    style={styles.touchablePrimaryBtn}
+                    onPress={restartRutine}                
+                >
+                    <LinearGradient
+                        colors={btnGradientColors.startButton[0]} 
+                        style={styles.primaryButton}           
+                    >
+                        <Text style={styles.buttonText}>Iniciar</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
                 <TouchableOpacity 
                     style={styles.touchablePrimaryBtn}
                     onPress={returnToMain}                
                 >
                     <LinearGradient
-                        colors={backBtnColor[0]} 
+                        colors={btnGradientColors.backBtnColor} 
                         style={styles.primaryButton}           
                     >
                         <Text style={styles.buttonText}>Regresar</Text>
                     </LinearGradient>
                 </TouchableOpacity>
+                
             </View>
         </>
     )

@@ -5,7 +5,17 @@ export const TOTAL_CENTER = {
     justifyContent: 'center',
     alignItems: 'center', 
 }
-
+export const btnGradientColors = {
+  startButton: [
+    ['#F0CB35', '#C02425'],
+    ['#159957', '#155799'],
+    ['#C33764', '#1D2671'],
+  ],
+  backBtnColor: ['#ED213A', '#93291E']
+}
+export const pieChartColors = [
+ ['rgba(255,50,0,.5)','rgba(255,0,0,.5)','rgba(255,0,0,.8)' ],
+]
 export default StyleSheet.create({
     mainContainer: {
       flex: 1,
@@ -24,11 +34,12 @@ export default StyleSheet.create({
     touchablePrimaryBtn: {
         width: '60%',
         height: '8%',
+        marginBottom: 5
     },
     primaryButton: {
       height: '100%',      
       borderRadius: 10,
-      flexDirection: 'row',
+      flexDirection: 'row',      
       ...TOTAL_CENTER 
     },
     buttonText: {
@@ -77,9 +88,9 @@ export default StyleSheet.create({
       ...TOTAL_CENTER
     },
     breathCircle: {
-      borderRadius: 120, 
-      height: 240, 
-      width: 240, 
+      borderRadius: 115, 
+      height: 230, 
+      width: 230, 
       position: 'absolute', 
       backgroundColor: 'red',
       ...TOTAL_CENTER
@@ -96,6 +107,31 @@ export default StyleSheet.create({
       backgroundColor: 'white', 
       borderWidth: 1, 
       borderColor: '#666'
+    },
+    instruction: {
+      position: 'absolute',
+      color: 'white',
+      fontSize: 50,
+      fontFamily: 'Sacramento-Regular'
+    },
+    countDownModal: {
+      backgroundColor: 'rgba(255,255,255,.9)',
+      height: '100%',
+      width: '100%',
+      ...TOTAL_CENTER
+    },
+    countDownContainer: {
+      borderColor: '#666',
+      borderWidth: 1,      
+      borderRadius: 30,
+      height: 200,
+      width: 200,
+      backgroundColor: 'white',
+      ...TOTAL_CENTER     
+    },
+    countDownNum: {
+      fontSize: 100,
+      fontFamily: 'Sacramento-Regular'
     }
   })
 
