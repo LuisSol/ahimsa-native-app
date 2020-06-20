@@ -87,7 +87,11 @@ export default StyleSheet.create({
     quoteModal: {
       height: '100%',
       width: '100%',
-      ...TOTAL_CENTER
+      padding: 30,
+      paddingTop: 40,
+      paddingBottom: 40,
+      alignItems: 'center',
+      justifyContent: 'space-between'
     },
     breathCircle: {
       borderRadius: 115, 

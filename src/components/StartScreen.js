@@ -6,10 +6,11 @@ import { VictoryPie } from 'victory-native'
 import { useSelector } from 'react-redux'
 
 import styles, { TOTAL_CENTER, btnGradientColors, pieChartColors } from '../styles'
+import QuoteModal from './QuoteModal'
 
 // Animations values
 const msgTransitionTime = 200;
-const introModalDuration = 4500;
+const introModalDuration = 5000;
 const spinValue = new Animated.Value(0);
 const growValue = new Animated.Value(0);
 const msg1Opacity = new Animated.Value(1);
@@ -201,16 +202,7 @@ const StartScreen = () => {
 
     return (
         <>
-            <Modal
-                visible={quoteVisible}
-                animationType='fade'
-            >
-                <View style={styles.quoteModal}>
-                    <Text>"Mala la wea"</Text>
-                    <Text>- Weon.</Text>
-                </View>
-            </Modal>
-
+            <QuoteModal quoteVisible={quoteVisible} />
             <Modal
                 visible={countdownVisible}
                 animationType='fade'

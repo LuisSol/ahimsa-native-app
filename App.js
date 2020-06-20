@@ -93,6 +93,9 @@ function AnimatedSplashScreen({ children, image }) {
         // Load fonts
         Font.loadAsync({
           'Sacramento-Regular': require('./src/assets/fonts/Sacramento-Regular.ttf')
+        }),
+        Font.loadAsync({
+          'Oswald-Regular': require('./src/assets/fonts/Oswald-Regular.ttf')
         })
 
       ]);
